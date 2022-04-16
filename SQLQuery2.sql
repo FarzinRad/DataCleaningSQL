@@ -3,25 +3,25 @@ Cleaning Data in SQL Queries
 */
 
 SELECT *
-FROM DataCleaningHousing.dbo.NashvileHousing
+FROM DataCleaningHousing.dbo.NashvilleHousing
 
 --------------------------------------------------------------------------------------------------------------------------
 
 -- Standardize Date Format
 
 Select saleDateConverted, CONVERT(Date,SaleDate)
-From DataCleaningHousing.dbo.NashvileHousing
+From DataCleaningHousing.dbo.NashvilleHousing
 
 
-Update NashvileHousing
+Update NashvilleHousing
 SET SaleDate = CONVERT(Date,SaleDate)
 
 -- If it doesn't Update properly
 
-ALTER TABLE NashvileHousing
+ALTER TABLE NashvilleHousing
 Add SaleDateConverted Date;
 
-Update NashvileHousing
+Update NashvilleHousing
 SET SaleDateConverted = CONVERT(Date,SaleDate)
 
 
@@ -29,8 +29,29 @@ SET SaleDateConverted = CONVERT(Date,SaleDate)
 
 -- Populate Property Address data
 
-Select PropertyAddress
-From DataCleaningHousing.dbo.NashvileHousing
+Select *
+From DataCleaningHousing.dbo.NashvilleHousing
+--Where PropertyAddress is null
+order by ParcelID
+
+
+
+Select a.ParcelID, a.PropertyAddress, b.ParcelID, b.PropertyAddress, ISNULL(a.PropertyAddress,b.PropertyAddress)
+From DataCleaningHousing.dbo.NashvileHousing a
+JOIN DataCleaningHousing.dbo.NashvileHousing b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] <> b.[UniqueID ]
+Where a.PropertyAddress is null
+
+
+Update a
+SET PropertyAddress = ISNULL(a.PropertyAddress,b.PropertyAddress)
+From DataCleaningHousing.dbo.NashvilleHousing a
+JOIN DataCleaningHousing.dbo.NashvilleHousing b
+	on a.ParcelID = b.ParcelID
+	AND a.[UniqueID ] <> b.[UniqueID ]
+Where a.PropertyAddress is null
+
 
 
 
@@ -38,8 +59,36 @@ From DataCleaningHousing.dbo.NashvileHousing
 
 -- Breaking out Address into Individual Columns (Address, City, State)
 
+Select PropertyAddress
+From DataCleaningHousing.dbo.NashvilleHousing
+--Where PropertyAddress is null
+--order by ParcelID
+
+SELECT
+SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) -1 ) as Address
+, SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1 , LEN(PropertyAddress)) as Address
+
+From DataCleaningHousing.dbo.NashvilleHousing
 
 
+ALTER TABLE NashvilleHousing
+Add PropertySplitAddress Nvarchar(255);
+
+Update NashvilleHousing
+SET PropertySplitAddress = SUBSTRING(PropertyAddress, 1, CHARINDEX(',', PropertyAddress) -1 )
+
+
+ALTER TABLE NashvilleHousing
+Add PropertySplitCity Nvarchar(255);
+
+Update NashvilleHousing
+SET PropertySplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress) + 1 , LEN(PropertyAddress))
+
+
+
+
+Select *
+From DataCleaningHousing.dbo.NashvilleHousing
 
 
 
@@ -47,6 +96,9 @@ From DataCleaningHousing.dbo.NashvileHousing
 
 
 -- Change Y and N to Yes and No in "Sold as Vacant" field
+
+
+
 
 
 
