@@ -180,7 +180,7 @@ Select *,
 					UniqueID
 					) row_num
 
-From PortfolioProject.dbo.NashvilleHousing
+From DataCleaningHousing.dbo.NashvilleHousing
 --order by ParcelID
 )
 Select *
@@ -191,7 +191,7 @@ Order by PropertyAddress
 
 
 Select *
-From PortfolioProject.dbo.NashvilleHousing
+From DataCleaningHousing.dbo.NashvilleHousing
 
 
 
@@ -201,13 +201,12 @@ From PortfolioProject.dbo.NashvilleHousing
 -- Delete Unused Columns
 
 
+Select *
+From DataCleaningHousing.dbo.NashvilleHousing
 
 
-
-
-
-
-
+ALTER TABLE DatacleaningHousing.dbo.NashvilleHousing
+DROP COLUMN OwnerAddress, TaxDistrict, PropertyAddress, SaleDate
 
 
 
